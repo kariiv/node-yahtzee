@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="Cool yahtzee">
+        <title>YAHTZEE | Lobby</title>
+        <link rel="icon" type="image/png" href="favicon.png">
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0">
+        <link rel="stylesheet" href="assets/css/animate.min.css"/>
+        <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+        <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
+    </head>
+    <body>
+        <main>
+            <div class="container">
+                <h1 class="animate__animated animate__bounceIn maintext text-center mb-3 mt-3">Yahtzee Multiplayer Lobby!</h1>
+                <h5 class="text-center">Waiting for players...</h5>
+                <h2 class="text-center" id="pin" hidden></h2>
+                <div class="row">
+                    <a href="/" class="col btn btn-danger rounded m-3 p-3">Leave</a>
+                    <div class="col btn btn-success rounded m-3 p-3" id="start">
+                        Start
+                    </div>
+                </div>
+
+                <h2>Players <span id="counter"></span></h2>
+                <div class="row" id="players"></div>
+            </div>
+        </main>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="assets/js/lobby.js"></script>
+    </body>
+</html>

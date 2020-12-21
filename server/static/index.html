@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="Cool yahtzee">
+        <title>YAHTZEE | Home</title>
+        <link rel="icon" type="image/png" href="favicon.png">
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0">
+        <link rel="stylesheet" href="assets/css/animate.min.css"/>
+        <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+        <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
+    </head>
+    <body>
+        <main>
+            <div class="container">
+                <h1 class="animate__animated animate__bounceIn maintext text-center mt-3 mb-3">Let's play Multiplayer Yahtzee!</h1>
+
+                <div class="col-md-6 m-auto mb-4">
+                    <label for="nickname" class="visually-hidden">Nickname:</label>
+                    <input type="text" id="nickname" name="nickname" placeholder="Nickname" class="form-control" autocomplete="off">
+                </div>
+
+                <div class="row m-auto">
+                    <div class="col mb-4">
+                        <h1 class="">Start new game</h1>
+                        <div class="alert alert-danger" role="alert" id="errorCreate" hidden></div>
+                        <div class="row">
+                            <div class="col">
+                                <label class="visually-hidden" for="name">Game name:</label>
+                                <input class="form-control" type="text" id="name" placeholder="Game name" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="row m-1">
+                            <div class="col-7">
+                                <label for="turns">How many turns:</label>
+                            </div>
+                            <div class="col">
+                                <select name="turns" id="turns" class="form-control forms" style="display: inline-block">
+                                    <option value="3" selected>3</option>
+                                    <option value="8">8</option>
+                                    <option value="13">13</option>
+                                </select><span class="mandatory"> *</span>
+                            </div>
+                        </div>
+                        <div class="row m-1">
+                            <div class="col-7">
+                                <label for="rolls">How many re-rolls:</label>
+                            </div>
+                            <div class="col">
+                                <input id="rolls" name="rolls" type="number" class="form-control forms" min="1" max="10" value="3">
+                            </div>
+                        </div>
+                        <div class="row m-1">
+                            <div class="col-7">
+                                <label for="players">Max number of players:</label>
+                            </div>
+                            <div class="col">
+                                <input id="players" name="rolls" type="number" class="form-control forms" min="2" max="10" value="4">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-7">
+                                <div class="form-check form-check-inline" style="margin-left: 15px">
+                                    <label class="form-check-label" for="public" >Public</label>
+                                    <input id="public" name="public" type="checkbox" class="form-check-input">
+                                </div>
+                            </div>
+                            <div class="col" style="padding-left: 6px;">
+                                <button class="btn btn-success " id="newGame">New Game</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h2>Multiplayer Connect</h2>
+                        <div class="alert alert-danger" role="alert" id="errorJoin" hidden></div>
+
+                        <div class="row g-2">
+                            <div class="col-auto">
+                                <label class="visually-hidden" for="pin">Pin</label>
+                                <input type="text" id="pin" name="pin" placeholder="Game Pin" class="form-control">
+                            </div>
+                            <div class="col-auto">
+                                <button id="pinButton" class="btn btn-primary">Join</button>
+                            </div>
+                        </div>
+
+                        <table class="table table-borderless table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Players</th>
+                                    <th scope="col">Turns</th>
+                                    <th scope="col">Rolls</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="mp">
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="assets/js/index.js"></script>
+    </body>
+</html>

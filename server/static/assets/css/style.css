@@ -1,0 +1,106 @@
+body {
+  background: url(../images/cool-background.png) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+td:hover {
+    background-color: white
+}
+
+.diceRow {
+  width: auto;
+  padding-right: unset;
+  padding-left: unset;
+  min-height: 50px;
+}
+
+.maintable:hover {
+    background-color: white
+}
+
+.button:hover {
+  background-color: #C71585;
+  color: white;
+}
+
+.chip {
+  display: inline-block;
+  padding: 0 25px;
+  height: 50px;
+  font-size: 16px;
+  line-height: 50px;
+  border-radius: 25px;
+  font-weight: 500;
+  background-color: #C71585;
+  width: auto !important;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.chip img {
+  float: left;
+  margin: 0 10px 0 -25px;
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+}
+
+.alert {
+  padding: 20px;
+  background-color: #f44336;
+  color: white;
+}
+
+.mandatory{color:black;}
+
+button {
+  background-color: hotpink;
+  border: 2px solid black;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+
+.maintext:hover {
+    color: white;
+}
+
+
+button.link { background:none;border:none; }
+
+.names {
+  flex: 0;
+  font-weight: 500;
+  font-size: 2.25rem;
+}
+
+.score-el {
+  font-weight: 500;
+}
+
+.score-me {
+  cursor: pointer;
+  color: greenyellow;
+}
+
+.score-op {
+  color: #444;
+}
+
+.total {
+  font-weight: 500;
+  color: white;
+}
+
+.forms {
+  width: auto !important;
+}

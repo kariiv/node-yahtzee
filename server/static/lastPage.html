@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="Cool yahtzee">
+        <title>YAHTZEE | Score</title>
+        <link rel="icon" type="image/png" href="favicon.png">
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0">
+        <link rel="stylesheet" href="assets/css/animate.min.css"/>
+        <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+        <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
+    </head>
+    <body>
+        <main>
+            <h1 class="animate__animated animate__lightSpeedInRight maintext text-center">Scoreboard!</h1>
+            <div class="container">
+                <div class="center">
+                    <table class="table table-bordered table-hover"  id="resultTable" border="1">
+                    </table>
+                </div>
+            </div>
+        </main>
+        <script type="text/javascript">
+            let data = [];
+            let sortType = "";
+
+            fetch("/api/scoreboard")
+                .then(res => res.json())
+                .then(json => {
+                    json.forEach((game) => {
+                        game.p.forEach((player)=>{
+                            data.push({name: player.n, rounds: game.r, score: player.s, datetime: game.t})
+                        })
+                    })
+
+                    reloadTable(data)
+                })
+
+
+            function reloadTable(line) {
+                function colToRow(row, data, f) {
+                    const th = document.createElement("th")
+                    th.innerHTML = f ? f(data) : data;
+                    row.appendChild(th);
+                }
+
+                const table = document.getElementById("resultTable");
+                table.innerHTML = "";
+
+                const headers = [
+                    {
+                        head:"Name",
+                        asc: () => data = data.sort((a, b) => {
+                            if (a.name < b.name) return -1;
+                            if (a.name > b.name) return 1;
+                            return 0;
+                        }),
+                        dec: () => data = data.sort((a, b) => {
+                            if (a.name > b.name) return -1;
+                            if (a.name < b.name) return 1;
+                            return 0;
+                        })
+                    },{
+                        head:"Rounds",
+                        asc: () => data.sort((a, b) => a.rounds - b.rounds),
+                        dec: () => data.sort((a, b) => b.rounds - a.rounds)
+                    },{
+                        head:"Score",
+                        asc: () => data.sort((a, b) => a.score - b.score),
+                        dec: () => data.sort((a, b) => b.score - a.score)
+                    },{
+                        head:"Datetime",
+                        asc: () => data.sort((a, b) => a.datetime - b.datetime),
+                        dec: () => data.sort((a, b) => b.datetime - a.datetime)
+                    }]
+
+                const headerElement = document.createElement("tr");
+                headers.forEach((x) => {
+                    const head = document.createElement("th");
+                    head.onclick = () => {
+                        if (sortType === x.name) {
+                            sortType = "";
+                            x.dec();
+                        }
+                        else {
+                            sortType = x.name;
+                            x.asc()
+                        };
+                        reloadTable(data);
+                    };
+                    head.innerHTML = x.head;
+                    headerElement.appendChild(head);
+                })
+                const thead = document.createElement("thead");
+                thead.appendChild(headerElement)
+                table.appendChild(thead);
+
+                const tbody = document.createElement("thead");
+                table.appendChild(tbody);
+                line.forEach((x) => {
+                    const tr = document.createElement("tr");
+                    colToRow(tr, x.name);
+                    colToRow(tr, x.rounds);
+                    colToRow(tr, x.score);
+                    colToRow(tr, x.datetime, (date) => {
+                        const d = new Date(date)
+                        return `${d.getDate()}.${d.getMonth()+1}.${d.getFullYear()} ${d.getHours()}:${d.getMinutes()}`
+                    });
+                    thead.appendChild(tr)
+                })
+            }
+        </script>
+    </body>
+</html>
