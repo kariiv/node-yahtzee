@@ -122,6 +122,7 @@ class Table {
         let conseq = 1;
         for (let idx = 1; idx < sorted.length ; idx++) {
             if (sorted[idx] === sorted[idx-1] + 1) conseq++;
+			else if(sorted[idx] === sorted[idx-1] + 1) continue;
             else conseq = 1;
             if (conseq > max) max = conseq;
         }

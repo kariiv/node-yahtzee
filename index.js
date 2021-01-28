@@ -226,7 +226,10 @@ app.use("/api/scoreboard", require('./app/routes/scoreboard'))
 app.use("/api/lobby", require('./app/routes/lobby'))
 app.use("/api/play", require('./app/routes/play'))
 
-const HOST = "192.168.8.104"
-// const HOST = "127.0.0.1"
+//const HOST = "192.168.8.104"
+const HOST = "127.0.0.1"
+const PORT = 80
 
-server.listen(80, HOST);
+server.listen(PORT, HOST, (a,b) => {
+	console.log(`Listening on ${HOST}:${PORT}...`)
+});
