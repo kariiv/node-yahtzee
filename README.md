@@ -11,7 +11,7 @@ Abipakett aine läbimiseks.
 - Animations
 
 USING COOKIES 🍪🍪🍪
-Use different browsers to play the game or incognito.
+Use different browsers or incognito to play the game.
 
 Design: kariiv & vertam
 Logic: kariiv
