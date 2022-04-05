@@ -22,8 +22,6 @@ class Game {
         this.currentPlayer = null;
         this._status = Game.status.WAITING;
         this.whitelist = [] // Joining players
-        this.ioIndex = null;
-        this.ioPlay = null;
         this.public = pub;
         this.pin = '';
         this.timeout = null;
@@ -36,12 +34,6 @@ class Game {
     }
     isPublic() {
         return this.public
-    }
-    setIoIndex(io) {
-        this.ioIndex = io;
-    }
-    setIoPlay(io) {
-        this.ioPlay = io;
     }
     isWhitelisted(uuid) {
         return this.whitelist.filter(p => p.id === uuid).length === 1
@@ -64,13 +56,8 @@ class Game {
     }
     playerLeftGame(uuid) {
         if (this._status === Game.status.WAITING) {
-            this.players = this.players.filter(p => p.getId() !== uuid)
-            if (this.isPublic()) this.ioIndex.emit("re", this.getValue())
-            if (this.players.length === 0)
-                this.timeout = setTimeout(() => {
-                    this.ioIndex.emit("del", this.getUUID())
-                    delete games[this.getUUID()]
-                }, 2000)
+            this.players = this.players.filter(p => p.getId() !== uuid);
+            this.whitelist = this.whitelist.filter(p => p.getId() !== uuid);
         }
         else if (this._status === Game.status.PLAYING) {
             const player = this.players.filter(p => p.getId() === uuid)[0]
@@ -79,28 +66,16 @@ class Game {
     }
     addWhitelist(player) {
         const filtered = this.whitelist.filter(p => p.id === player.id)
-        if (filtered.length === 0) {
-            this.whitelist.push(player)
-            clearTimeout(this.timeout)
-            return true
-        }
-        return false
+        if (filtered.length !== 0) return false;
+        this.whitelist.push(player)
+        clearTimeout(this.timeout)
+        return true;
     }
-    addPlayer(player) {
-        const filtered = this.players.filter(p => p.id === player.id)
-        if (filtered.length === 0) {
-            this.players.push(player)
-            return true
-        }
-        return false
-    }
-
     whitelistedToPlayerList(uuid) {
-        const player = this.whitelist.filter(p => p.id === uuid)[0]
+        const player = this.whitelist.filter(p => p.id === uuid)[0];
         this.players.push(player);
-        this.whitelist = this.whitelist.filter(p => p.id !== uuid)
-        player.setStatus(Player.status.CONNECTED)
-        if (this.isPublic()) this.ioIndex.emit("re", this.getValue())
+        this.whitelist = this.whitelist.filter(p => p.id !== uuid);
+        player.setStatus(Player.status.CONNECTED);
         return player;
     }
     canJoin() {
@@ -122,21 +97,18 @@ class Game {
     }
     startGame() {
         this.setStatus(Game.status.PLAYING)
-        if (this.isPublic()) this.ioIndex.emit("del", this.uuid)
         this.nextRound(true)
     }
 
     nextRound(first=false) {
         this.setNextPlayer(first);
-        if (this.isFinished()) this.finishGame();
-        else {
-            const uuid = this.currentPlayer.getId()
-            const status = this.currentPlayer.getStatus()
-            const chosen = this.currentPlayer.currentTable.chosen
-            const table = this.currentPlayer.currentTable.table
-            const rolls = this.currentPlayer.currentTable.getRollsLeft()
-            this.ioPlay.emit("next", {player:{uuid, status}, table, chosen, rolls})
-        }
+        if (this.isFinished()) return false;
+        const uuid = this.currentPlayer.getId()
+        const status = this.currentPlayer.getStatus()
+        const chosen = this.currentPlayer.currentTable.chosen
+        const table = this.currentPlayer.currentTable.table
+        const rolls = this.currentPlayer.currentTable.getRollsLeft()
+        return {player:{uuid, status}, table, chosen, rolls};
     }
 
     isFinished() {
@@ -145,7 +117,6 @@ class Game {
 
     finishGame() {
         this.setStatus(Game.status.FINISHED)
-        this.ioPlay.emit("gameover")
         this.saveGameDataToLocalStorage();
         delete games[this.getUUID()]
     }
@@ -176,32 +147,28 @@ class Game {
         this.currentPlayer.addTable(new Table(this.rollsCount));
     }
     selectDice(player, dice) {
-        if (player === this.currentPlayer) {
-            this.currentPlayer.currentTable.diceClick(dice)
-            this.ioPlay.emit('select', {table:this.currentPlayer.currentTable.table, chosen:this.currentPlayer.currentTable.chosen})
-        }
-        return false
+        if (player !== this.currentPlayer)
+            return false;
+        this.currentPlayer.currentTable.diceClick(dice)
+        return {table:this.currentPlayer.currentTable.table, chosen:this.currentPlayer.currentTable.chosen};
     }
     roll(player) {
-        if (player === this.currentPlayer)
-            if (this.currentPlayer.currentTable.roll())
-                this.ioPlay.emit('roll', {table:this.currentPlayer.currentTable.table, rolls: this.currentPlayer.currentTable.getRollsLeft()})
+        if (player !== this.currentPlayer || !this.currentPlayer.currentTable.roll())
+            return false;
+        return {table:this.currentPlayer.currentTable.table, rolls: this.currentPlayer.currentTable.getRollsLeft()};
     }
     selectRule(player, rule) {
-        if (player === this.currentPlayer && this.currentPlayer.canSelectRule()) {
-            this.currentPlayer.selectRule(rule);
-            this.currentPlayer.setStatus(Player.status.PLAYING)
-            const { method, score } = this.currentPlayer.currentTable
-            this.ioPlay.emit('turn', { uuid: this.currentPlayer.getId(),status: this.currentPlayer.getStatus(), score: {rule: method, value: score}  })
-            this.nextRound();
-            return true
-        }
+        if (player !== this.currentPlayer || !this.currentPlayer.canSelectRule())
+            return false;
+        this.currentPlayer.selectRule(rule);
+        this.currentPlayer.setStatus(Player.status.PLAYING);
+        const { method, score } = this.currentPlayer.currentTable;
+        return { uuid: this.currentPlayer.getId(), status: this.currentPlayer.getStatus(), score: {rule: method, value: score}};
     }
 
     getValue() {
-        const val = { uuid: this.uuid, name: this.name, turns: this.turnsCount, rolls: this.rollsCount, max: this.maxPlayers, players: this.players.length }
-        if (!this.isPublic())
-            val.pin = this.getPin()
+        const val = { uuid: this.getUUID(), name: this.getGameName(), turns: this.turnsCount, rolls: this.rollsCount, max: this.maxPlayers, players: this.players.length }
+        if (!this.isPublic()) val.pin = this.getPin()
         return val
     }
 }
